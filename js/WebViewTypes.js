@@ -62,6 +62,8 @@ export type WebViewNavigationEvent = SyntheticEvent<WebViewNavigation>;
 
 export type WebViewMessageEvent = SyntheticEvent<WebViewMessage>;
 
+export type WebViewMessageEvent = SyntheticEvent<WebViewMessage>;
+
 export type WebViewErrorEvent = SyntheticEvent<WebViewError>;
 
 export type DataDetectorTypes =
@@ -201,13 +203,6 @@ export type IOSWebViewProps = $ReadOnly<{|
     | ?DataDetectorTypes
     | $ReadOnlyArray<DataDetectorTypes>,
 
-  /**
-   * Function that allows custom handling of any web view requests. Return
-   * `true` from the function to continue loading the request and `false`
-   * to stop loading.
-   * @platform ios
-   */
-  onShouldStartLoadWithRequest?: (event: WebViewEvent) => mixed,
 
   /**
    * Boolean that determines whether HTML5 videos play inline or use the
@@ -435,7 +430,16 @@ export type WebViewSharedProps =  $ReadOnly<{|
    */
   originWhitelist?: $ReadOnlyArray<string>,
 
-  /**
+    /**
+     * Function that allows custom handling of any web view requests. Return
+     * `true` from the function to continue loading the request and `false`
+     * to stop loading. The `navigationType` is always `other` on android.
+     */
+    onShouldStartLoadWithRequest?: (event: WebViewNavigation) => mixed,
+
+
+
+    /**
    * Override the native component used to render the WebView. Enables a custom native
    * WebView which uses the same JavaScript as the original WebView.
    */
@@ -444,3 +448,5 @@ export type WebViewSharedProps =  $ReadOnly<{|
   style?: ViewStyleProp,
   children: Node,
 |}>;
+
+

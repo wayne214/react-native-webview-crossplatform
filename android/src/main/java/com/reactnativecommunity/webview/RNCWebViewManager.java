@@ -7,6 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
+import com.facebook.react.bridge.ReactMethod;
+import android.widget.Toast;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.reactnativecommunity.webview.events.TopShouldStartLoadWithRequestEvent;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -72,12 +76,14 @@ import org.json.JSONObject;
  *  - GO_BACK
  *  - GO_FORWARD
  *  - RELOAD
+ *  - LOAD_URL
  *
  * {@link WebView} instances could emit following direct events:
  *  - topLoadingFinish
  *  - topLoadingStart
  *  - topLoadingStart
  *  - topLoadingProgress
+ *  - topShouldStartLoadWithRequest
  *
  * Each event will carry the following properties:
  *  - target - view's react tag
@@ -104,6 +110,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
   public static final int COMMAND_STOP_LOADING = 4;
   public static final int COMMAND_POST_MESSAGE = 5;
   public static final int COMMAND_INJECT_JAVASCRIPT = 6;
+  public static final int COMMAND_LOAD_URL = 7;
 
   // Use `webView.loadUrl("about:blank")` to reliably reset the view
   // state and release page resources (including any running JavaScript).
@@ -144,25 +151,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-      if (url.equals(BLANK_URL)) return false;
-
-      // url blacklisting
-      if (mUrlPrefixesForDefaultIntent != null && mUrlPrefixesForDefaultIntent.size() > 0) {
-        ArrayList<Object> urlPrefixesForDefaultIntent =
-            mUrlPrefixesForDefaultIntent.toArrayList();
-        for (Object urlPrefix : urlPrefixesForDefaultIntent) {
-          if (url.startsWith((String) urlPrefix)) {
-            launchIntent(view.getContext(), url);
-            return true;
-          }
-        }
-      }
-
-      if (mOriginWhitelist != null && shouldHandleURL(mOriginWhitelist, url)) {
-        return false;
-      }
-
-      launchIntent(view.getContext(), url);
+      dispatchEvent(view, new TopShouldStartLoadWithRequestEvent(view.getId(), url));
       return true;
     }
 
@@ -676,7 +665,8 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
         "reload", COMMAND_RELOAD,
         "stopLoading", COMMAND_STOP_LOADING,
         "postMessage", COMMAND_POST_MESSAGE,
-        "injectJavaScript", COMMAND_INJECT_JAVASCRIPT
+        "injectJavaScript", COMMAND_INJECT_JAVASCRIPT,
+        "loadUrl", COMMAND_LOAD_URL
       );
   }
 
@@ -719,6 +709,12 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
         RNCWebView reactWebView = (RNCWebView) root;
         reactWebView.evaluateJavascriptWithFallback(args.getString(0));
         break;
+    case COMMAND_LOAD_URL:
+             if (args == null) {
+               throw new RuntimeException("Arguments for loading an url are null!");
+             }
+             root.loadUrl(args.getString(0));
+             break;
     }
   }
 
@@ -752,4 +748,14 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
       reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     eventDispatcher.dispatchEvent(event);
   }
+
+    public Map<String, Object> getExportedCustomBubblingEventTypeConstants() {
+       return MapBuilder.<String, Object>builder()
+               .put(TopShouldStartLoadWithRequestEvent.EVENT_NAME,
+                       MapBuilder.of(
+                               "phasedRegistrationNames",
+                               MapBuilder.of("bubbled", "onShouldStartLoadWithRequest")))
+               .build();
+     }
+
 }
