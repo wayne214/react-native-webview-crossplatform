@@ -15,15 +15,15 @@ If you need the exact same WebView as the one from react-native, please use vers
 ## Getting Started
 
 ```
-$ yarn add react-native-webview
-$ react-native link react-native-webview
+$ yarn add react-native-webview-crossplatform
+$ react-native link react-native-webview-crossplatform
 ```
 
 Read our [Getting Started Guide](./docs/Getting-Started.md) for more.
 
 ## Usage
 
-Import the `WebView` component from `react-native-webview` and use it like so:
+Import the `WebView` component from `react-native-webview-crossplatform` and use it like so:
 
 ```jsx
 import React, { Component } from 'react';
