@@ -268,6 +268,7 @@ Function that allows custom handling of any web view requests. Return `true` fro
 | Type     | Required | Platform |
 | -------- | -------- | -------- |
 | function | No       | iOS      |
+| function | No       | Android  |
 
 ---
 
