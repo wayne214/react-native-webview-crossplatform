@@ -28,7 +28,7 @@ Import the `WebView` component from `react-native-webview-crossplatform` and use
 ```jsx
 import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { WebView } from 'react-native-webview';
+import { WebView } from 'react-native-webview-crossplatform';
 
 // ...
 class MyWebComponent extends Component {
