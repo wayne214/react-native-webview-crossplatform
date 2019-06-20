@@ -1,5 +1,7 @@
 # React Native WebView - a Modern, Cross-Platform WebView for React Native
 
+### now,we can use the https://github.com/react-native-community/react-native-webview ，it support the method onShouldStartLoadWithRequest for Ios and Android
+
 ## Platforms Supported
 
 - [x] iOS (both UIWebView and WKWebView)
